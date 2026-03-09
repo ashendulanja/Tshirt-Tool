@@ -9,7 +9,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Textured Noise Background */
+        /* Webpage Background */
         body {
             background-color: #f3f4f6;
             background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
@@ -20,19 +20,30 @@
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #f1f1f1; }
         ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
-        ::-webkit-scrollbar-thumb:hover { background: #555; }
 
-        /* Animations */
         .fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* Print Container (A4 aspect ratio styling) */
+        /* --- PDF Document Specific Styles --- */
         #pdf-content {
-            background: white;
+            /* Modern Dot Grid Background */
+            background-color: #fdfdfd;
+            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-size: 20px 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        /* Attractive Top Gradient Border for PDF */
+        #pdf-content::before {
+            content: '';
+            position: absolute;
+            top: 0; left: 0; right: 0;
+            height: 8px;
+            background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+            z-index: 10;
         }
 
-        /* In-app Toast Notification */
         #toast {
             position: fixed;
             bottom: 20px;
@@ -59,7 +70,7 @@
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
-            <div class="lg:col-span-5 bg-white/80 backdrop-blur-md p-6 rounded-2xl shadow-xl fade-in border border-gray-200">
+            <div class="lg:col-span-5 bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-xl fade-in border border-gray-200">
                 <h2 class="text-xl font-bold mb-6 flex items-center gap-2 border-b pb-2"><i class="fa-solid fa-pen-to-square text-indigo-500"></i> Order Details</h2>
                 
                 <div class="space-y-5">
@@ -83,32 +94,17 @@
                     <div class="bg-indigo-50/50 p-4 rounded-lg border border-indigo-100">
                         <label class="block text-sm font-semibold mb-3"><i class="fa-solid fa-chart-bar text-indigo-500"></i> Sizes & Quantities</label>
                         <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            <div>
-                                <label class="text-xs font-bold text-gray-600">Small (S)</label>
-                                <input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()">
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-600">Medium (M)</label>
-                                <input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()">
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-600">Large (L)</label>
-                                <input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()">
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-600">X-Large (XL)</label>
-                                <input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()">
-                            </div>
-                            <div>
-                                <label class="text-xs font-bold text-gray-600">2X-Large (XXL)</label>
-                                <input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()">
-                            </div>
+                            <div><label class="text-xs font-bold text-gray-600">Small (S)</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()"></div>
+                            <div><label class="text-xs font-bold text-gray-600">Medium (M)</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()"></div>
+                            <div><label class="text-xs font-bold text-gray-600">Large (L)</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()"></div>
+                            <div><label class="text-xs font-bold text-gray-600">X-Large (XL)</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()"></div>
+                            <div><label class="text-xs font-bold text-gray-600">2X-Large (XXL)</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()"></div>
                         </div>
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold mb-1">Additional Notes / Instructions</label>
-                        <textarea id="input-note" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="E.g. Use 100% cotton, careful with the collar..." oninput="updatePreview()"></textarea>
+                        <label class="block text-sm font-semibold mb-1">Additional Notes</label>
+                        <textarea id="input-note" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="Instructions here..." oninput="updatePreview()"></textarea>
                     </div>
 
                     <button onclick="generatePDF()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all flex justify-center items-center gap-2 transform hover:-translate-y-1">
@@ -124,62 +120,64 @@
                         <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-bold">Auto-updating</span>
                     </div>
                     
-                    <div id="pdf-content" class="p-8 md:p-12 rounded-lg relative overflow-hidden bg-white">
-                        
-                        <div class="flex justify-between items-center border-b-2 border-gray-200 pb-6 mb-6">
-                            <div>
-                                <img id="preview-logo" src="" alt="Logo Preview" class="hidden object-contain" style="width: 120px;">
-                                <div id="logo-placeholder" class="text-gray-300 italic text-sm">No Logo Uploaded</div>
-                            </div>
-                            <div class="text-right">
-                                <h1 class="text-2xl font-black text-gray-800 uppercase tracking-widest">Order Sheet</h1>
-                                <p class="text-gray-500 mt-1 font-medium">Date: <span id="display-date" class="text-gray-800">YYYY-MM-DD</span></p>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="overflow-x-auto rounded-lg">
+                        <div id="pdf-content" class="p-8 md:p-12 w-full min-h-[800px]">
                             
-                            <div class="bg-gray-50 rounded-xl p-4 border border-gray-100 flex flex-col items-center justify-center min-h-[250px]">
-                                <h3 class="text-sm font-bold text-gray-400 uppercase tracking-wide mb-3 w-full text-center">Design Preview</h3>
-                                <img id="preview-design" src="" class="hidden max-h-64 rounded shadow-sm object-contain">
-                                <div id="design-placeholder" class="text-gray-300 text-center">
-                                    <i class="fa-solid fa-shirt text-4xl mb-2"></i>
-                                    <p class="text-sm">No design uploaded</p>
+                            <div class="flex justify-between items-center border-b-2 border-indigo-100 pb-6 mb-6 pt-4">
+                                <div>
+                                    <img id="preview-logo" src="" alt="Logo" class="hidden object-contain" style="width: 120px;">
+                                    <div id="logo-placeholder" class="text-gray-400 italic text-sm">No Logo Uploaded</div>
+                                </div>
+                                <div class="text-right">
+                                    <h1 class="text-3xl font-black text-gray-800 uppercase tracking-widest drop-shadow-sm">Order Sheet</h1>
+                                    <p class="text-gray-600 mt-1 font-semibold">Date: <span id="display-date" class="text-gray-900">YYYY-MM-DD</span></p>
                                 </div>
                             </div>
 
-                            <div>
-                                <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">Sizing & Quantities</h3>
-                                <div class="overflow-hidden rounded-lg border border-gray-200">
-                                    <table class="w-full text-left text-sm">
-                                        <thead class="bg-gray-800 text-white">
-                                            <tr>
-                                                <th class="px-4 py-2 font-semibold">Size</th>
-                                                <th class="px-4 py-2 font-semibold text-right">Qty</th>
-                                            </tr>
-                                        </thead>
-                                        <tbody class="divide-y divide-gray-200" id="chart-body">
-                                            <tr><td class="px-4 py-2 text-gray-500 italic" colspan="2">Waiting for input...</td></tr>
-                                        </tbody>
-                                        <tfoot class="bg-indigo-50 font-bold border-t-2 border-indigo-200">
-                                            <tr>
-                                                <td class="px-4 py-3 text-indigo-900">TOTAL</td>
-                                                <td class="px-4 py-3 text-right text-indigo-900 text-lg" id="display-total">0</td>
-                                            </tr>
-                                        </tfoot>
-                                    </table>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                                
+                                <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 flex flex-col items-center justify-center min-h-[250px] shadow-sm">
+                                    <h3 class="text-sm font-bold text-indigo-400 uppercase tracking-wide mb-3 w-full text-center">Design Preview</h3>
+                                    <img id="preview-design" src="" class="hidden max-h-64 rounded shadow-sm object-contain">
+                                    <div id="design-placeholder" class="text-gray-300 text-center">
+                                        <i class="fa-solid fa-shirt text-4xl mb-2"></i>
+                                        <p class="text-sm">No design uploaded</p>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">Sizing & Quantities</h3>
+                                    <div class="overflow-hidden rounded-lg border border-gray-200 bg-white/80 shadow-sm">
+                                        <table class="w-full text-left text-sm">
+                                            <thead class="bg-gray-800 text-white">
+                                                <tr>
+                                                    <th class="px-4 py-3 font-semibold">Size</th>
+                                                    <th class="px-4 py-3 font-semibold text-right">Qty</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody class="divide-y divide-gray-100" id="chart-body">
+                                                <tr><td class="px-4 py-3 text-gray-500 italic" colspan="2">Waiting for input...</td></tr>
+                                            </tbody>
+                                            <tfoot class="bg-indigo-50 font-bold border-t-2 border-indigo-200">
+                                                <tr>
+                                                    <td class="px-4 py-3 text-indigo-900">TOTAL</td>
+                                                    <td class="px-4 py-3 text-right text-indigo-900 text-lg" id="display-total">0</td>
+                                                </tr>
+                                            </tfoot>
+                                        </table>
+                                    </div>
+                                </div>
+
+                            </div>
+
+                            <div class="mt-8 pt-6 border-t border-indigo-100">
+                                <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-2"><i class="fa-solid fa-circle-info text-indigo-500"></i> Notes / Instructions</h3>
+                                <div class="bg-white/80 p-4 rounded-lg border border-gray-200 min-h-[80px] shadow-sm">
+                                    <p id="display-note" class="text-gray-700 whitespace-pre-wrap text-sm italic">No special instructions provided.</p>
                                 </div>
                             </div>
 
                         </div>
-
-                        <div class="mt-8 pt-6 border-t border-gray-200">
-                            <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-2"><i class="fa-solid fa-circle-info text-indigo-500"></i> Notes / Instructions</h3>
-                            <div class="bg-yellow-50/50 p-4 rounded-lg border border-yellow-100 min-h-[80px]">
-                                <p id="display-note" class="text-gray-700 whitespace-pre-wrap text-sm italic">No special instructions provided.</p>
-                            </div>
-                        </div>
-
                     </div>
                 </div>
             </div>
@@ -187,11 +185,9 @@
     </div>
 
     <script>
-        // Set today's date automatically
         document.getElementById('input-date').valueAsDate = new Date();
         updatePreview();
 
-        // Handle Image Uploads and Previews
         function previewImage(input, targetId) {
             const file = input.files[0];
             const imgElement = document.getElementById(targetId);
@@ -209,13 +205,11 @@
             }
         }
 
-        // Handle Logo Resize
         function updateLogoSize() {
             const size = document.getElementById('logo-size').value;
             document.getElementById('preview-logo').style.width = size + 'px';
         }
 
-        // Handle Chart & Total Calculation
         function updateChart() {
             const inputs = document.querySelectorAll('.qty-input');
             const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
@@ -248,7 +242,6 @@
             document.getElementById('display-total').innerText = total;
         }
 
-        // Handle Date & Notes updates
         function updatePreview() {
             const dateVal = document.getElementById('input-date').value;
             document.getElementById('display-date').innerText = dateVal || 'Not Set';
@@ -266,7 +259,6 @@
             }
         }
 
-        // Custom Toast Notification (No default browser alerts)
         function showToast(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = message;
@@ -276,22 +268,41 @@
             }, 3000);
         }
 
-        // Generate PDF
         function generatePDF() {
             showToast("Generating PDF... Please wait.");
             const element = document.getElementById('pdf-content');
             
-            // PDF generation options
+            // Generate wena weleta Mobile eke design eka kedenne nathi wenna fixed width ekak denawa
+            const originalWidth = element.style.width;
+            const originalMaxWidth = element.style.maxWidth;
+            
+            element.style.width = '800px'; 
+            element.style.maxWidth = '800px';
+
+            // Fixed width eka dunnata passe height eka calculate karanawa
+            const elementHeight = element.offsetHeight;
+            
             const opt = {
-                margin:       [0.5, 0.5, 0.5, 0.5],
+                margin:       0, // Sudu borders ainkala
                 filename:     `Order_${document.getElementById('input-date').value}.pdf`,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                jsPDF:        { unit: 'in', format: 'a4', orientation: 'portrait' }
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true,
+                    windowWidth: 800 // Print wena capture width eka
+                },
+                jsPDF:        { 
+                    unit: 'px', 
+                    format: [800, elementHeight], // PDF eke size eka document eke size ekatam match wenawa
+                    orientation: 'portrait' 
+                }
             };
 
-            // Generate and save
             html2pdf().set(opt).from(element).save().then(() => {
+                // Download unata passe UI eka kalin thibba widihatama hadanawa
+                element.style.width = originalWidth || '100%';
+                element.style.maxWidth = originalMaxWidth || '100%';
+                
                 setTimeout(() => showToast("PDF downloaded successfully!"), 500);
             });
         }
