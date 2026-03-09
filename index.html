@@ -16,25 +16,22 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        /* Custom Scrollbar */
-        ::-webkit-scrollbar { width: 8px; }
-        ::-webkit-scrollbar-track { background: #f1f1f1; }
-        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
-
         .fade-in { animation: fadeIn 0.5s ease-in-out; }
         @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-        /* --- PDF Document Specific Styles --- */
+        /* --- PDF Document Background & Styles --- */
         #pdf-content {
-            /* Modern Dot Grid Background */
-            background-color: #fdfdfd;
-            background-image: radial-gradient(#cbd5e1 1px, transparent 1px);
+            background-color: #ffffff;
+            /* Lassana light gradient grid background ekak */
+            background-image: 
+                linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
+                linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px);
             background-size: 20px 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             position: relative;
         }
         
-        /* Attractive Top Gradient Border for PDF */
+        /* Top Premium Gradient Line */
         #pdf-content::before {
             content: '';
             position: absolute;
@@ -65,13 +62,12 @@
     <div class="max-w-7xl mx-auto">
         <header class="text-center mb-10 fade-in">
             <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight">Order <span class="text-indigo-600">Generator</span></h1>
-            <p class="text-gray-600 mt-2">Create professional manufacturing order sheets instantly.</p>
         </header>
 
         <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
             
             <div class="lg:col-span-5 bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-xl fade-in border border-gray-200">
-                <h2 class="text-xl font-bold mb-6 flex items-center gap-2 border-b pb-2"><i class="fa-solid fa-pen-to-square text-indigo-500"></i> Order Details</h2>
+                <h2 class="text-xl font-bold mb-6 flex items-center gap-2 border-b pb-2"><i class="fa-solid fa-pen-to-square text-indigo-500"></i> Details</h2>
                 
                 <div class="space-y-5">
                     <div>
@@ -103,7 +99,7 @@
                     </div>
 
                     <div>
-                        <label class="block text-sm font-semibold mb-1">Additional Notes</label>
+                        <label class="block text-sm font-semibold mb-1">Note</label>
                         <textarea id="input-note" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="Instructions here..." oninput="updatePreview()"></textarea>
                     </div>
 
@@ -117,11 +113,10 @@
                 <div class="sticky top-8">
                     <div class="flex justify-between items-center mb-3 px-2">
                         <h2 class="text-lg font-bold text-gray-700"><i class="fa-solid fa-eye"></i> Live Preview</h2>
-                        <span class="text-xs bg-green-100 text-green-700 px-2 py-1 rounded-full font-bold">Auto-updating</span>
                     </div>
                     
                     <div class="overflow-x-auto rounded-lg">
-                        <div id="pdf-content" class="p-8 md:p-12 w-full min-h-[800px]">
+                        <div id="pdf-content" class="p-8 md:p-12 w-full min-h-[600px]">
                             
                             <div class="flex justify-between items-center border-b-2 border-indigo-100 pb-6 mb-6 pt-4">
                                 <div>
@@ -136,7 +131,7 @@
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                                 
-                                <div class="bg-white/80 backdrop-blur-sm rounded-xl p-4 border border-gray-200 flex flex-col items-center justify-center min-h-[250px] shadow-sm">
+                                <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-gray-200 flex flex-col items-center justify-center min-h-[250px] shadow-sm">
                                     <h3 class="text-sm font-bold text-indigo-400 uppercase tracking-wide mb-3 w-full text-center">Design Preview</h3>
                                     <img id="preview-design" src="" class="hidden max-h-64 rounded shadow-sm object-contain">
                                     <div id="design-placeholder" class="text-gray-300 text-center">
@@ -147,7 +142,7 @@
 
                                 <div>
                                     <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">Sizing & Quantities</h3>
-                                    <div class="overflow-hidden rounded-lg border border-gray-200 bg-white/80 shadow-sm">
+                                    <div class="overflow-hidden rounded-lg border border-gray-200 bg-white/90 shadow-sm">
                                         <table class="w-full text-left text-sm">
                                             <thead class="bg-gray-800 text-white">
                                                 <tr>
@@ -171,8 +166,8 @@
                             </div>
 
                             <div class="mt-8 pt-6 border-t border-indigo-100">
-                                <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-2"><i class="fa-solid fa-circle-info text-indigo-500"></i> Notes / Instructions</h3>
-                                <div class="bg-white/80 p-4 rounded-lg border border-gray-200 min-h-[80px] shadow-sm">
+                                <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-2"><i class="fa-solid fa-circle-info text-indigo-500"></i> Notes</h3>
+                                <div class="bg-white/90 p-4 rounded-lg border border-gray-200 min-h-[80px] shadow-sm">
                                     <p id="display-note" class="text-gray-700 whitespace-pre-wrap text-sm italic">No special instructions provided.</p>
                                 </div>
                             </div>
@@ -272,39 +267,57 @@
             showToast("Generating PDF... Please wait.");
             const element = document.getElementById('pdf-content');
             
-            // Generate wena weleta Mobile eke design eka kedenne nathi wenna fixed width ekak denawa
+            // Mobile eke awula hadanna element eka temporary desktop size ekata force karanawa
             const originalWidth = element.style.width;
             const originalMaxWidth = element.style.maxWidth;
+            const originalPosition = element.style.position;
+            const originalTransform = element.style.transform;
             
-            element.style.width = '800px'; 
+            element.style.width = '800px';
             element.style.maxWidth = '800px';
+            element.style.position = 'absolute'; // Container eken eliyata aragannawa print weddi
+            element.style.top = '0';
+            element.style.left = '0';
+            element.style.transform = 'none';
 
-            // Fixed width eka dunnata passe height eka calculate karanawa
-            const elementHeight = element.offsetHeight;
-            
-            const opt = {
-                margin:       0, // Sudu borders ainkala
-                filename:     `Order_${document.getElementById('input-date').value}.pdf`,
-                image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { 
-                    scale: 2, 
-                    useCORS: true,
-                    windowWidth: 800 // Print wena capture width eka
-                },
-                jsPDF:        { 
-                    unit: 'px', 
-                    format: [800, elementHeight], // PDF eke size eka document eke size ekatam match wenawa
-                    orientation: 'portrait' 
-                }
-            };
+            // Document eke uda hatama scroll karanawa (Naththam yata kedenawa)
+            window.scrollTo(0, 0);
 
-            html2pdf().set(opt).from(element).save().then(() => {
-                // Download unata passe UI eka kalin thibba widihatama hadanawa
-                element.style.width = originalWidth || '100%';
-                element.style.maxWidth = originalMaxWidth || '100%';
-                
-                setTimeout(() => showToast("PDF downloaded successfully!"), 500);
-            });
+            // Podi delay ekak denawa browser ekata aluth width eka hadaganna
+            setTimeout(() => {
+                const finalHeight = element.scrollHeight; // Force kalata passe height eka gannawa
+
+                const opt = {
+                    margin:       0, // Wate sudu kali ainkarala
+                    filename:     `Order_${document.getElementById('input-date').value}.pdf`,
+                    image:        { type: 'jpeg', quality: 1 },
+                    html2canvas:  { 
+                        scale: 2, 
+                        useCORS: true,
+                        scrollY: 0, // Scroll wela thibbath kedenne nathi wenna
+                        windowWidth: 800,
+                        width: 800,
+                        height: finalHeight
+                    },
+                    jsPDF:        { 
+                        unit: 'px', 
+                        format: [800, finalHeight], // Kelinma doc eke size ekata PDF eka set karanawa
+                        orientation: 'portrait' 
+                    }
+                };
+
+                html2pdf().set(opt).from(element).save().then(() => {
+                    // Download wunata passe ayeth mobile view eke display eka hadanawa
+                    element.style.width = originalWidth || '100%';
+                    element.style.maxWidth = originalMaxWidth || '100%';
+                    element.style.position = originalPosition || 'relative';
+                    element.style.top = '';
+                    element.style.left = '';
+                    element.style.transform = originalTransform || '';
+                    
+                    setTimeout(() => showToast("PDF downloaded successfully!"), 500);
+                });
+            }, 300); // 300ms delay eken DOM eka ready karagannawa
         }
     </script>
 </body>
