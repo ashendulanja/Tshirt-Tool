@@ -3,53 +3,112 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>T-Shirt Order Generator</title>
+    <title>Pro Order Generator - Hype Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
-        /* Webpage Background */
+        /* Webpage App Background */
         body {
             background-color: #f3f4f6;
-            background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noiseFilter'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.65' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noiseFilter)' opacity='0.08'/%3E%3C/svg%3E");
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
 
-        .fade-in { animation: fadeIn 0.5s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .fade-in { animation: fadeIn 0.4s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
 
         /* --- PDF Document Background & Styles --- */
         #pdf-content {
             background-color: #ffffff;
-            /* Lassana light gradient grid background ekak */
-            background-image: 
-                linear-gradient(90deg, rgba(99, 102, 241, 0.05) 1px, transparent 1px),
-                linear-gradient(rgba(99, 102, 241, 0.05) 1px, transparent 1px);
-            background-size: 20px 20px;
             box-shadow: 0 10px 25px rgba(0,0,0,0.1);
             position: relative;
+            background-size: cover;
+            background-position: center;
         }
         
-        /* Top Premium Gradient Line */
         #pdf-content::before {
             content: '';
             position: absolute;
             top: 0; left: 0; right: 0;
             height: 8px;
-            background: linear-gradient(90deg, #6366f1, #a855f7, #ec4899);
+            background: #111; /* Clean black top line */
             z-index: 10;
+        }
+
+        /* Background Tint Layer */
+        #pdf-tint {
+            position: absolute;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background-color: rgba(255, 255, 255, 0.9); /* Default tint */
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Bring content above tint */
+        #pdf-inner-content {
+            position: relative;
+            z-index: 5;
+        }
+
+        /* Embroidery Graphic Lines for Tailor */
+        .measure-width {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #4b5563;
+            font-weight: bold;
+            margin-top: 8px;
+            position: relative;
+        }
+        .measure-width::before, .measure-width::after {
+            content: '';
+            height: 1px;
+            background-color: #9ca3af;
+            flex-grow: 1;
+            margin: 0 10px;
+        }
+        
+        .measure-height-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            padding-left: 15px;
+        }
+        
+        .measure-height {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            font-size: 0.75rem;
+            color: #4b5563;
+            font-weight: bold;
+            height: 100%;
+        }
+        .measure-height::before, .measure-height::after {
+            content: '';
+            width: 1px;
+            background-color: #9ca3af;
+            flex-grow: 1;
+            margin: 10px 0;
         }
 
         #toast {
             position: fixed;
-            bottom: 20px;
-            right: 20px;
+            bottom: 20px; right: 20px;
             transform: translateX(150%);
             transition: transform 0.3s ease-in-out;
             z-index: 50;
         }
         #toast.show { transform: translateX(0); }
+        
+        /* Tab Styles */
+        .tab-content { display: none; }
+        .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
+        .tab-btn.active { border-bottom: 2px solid #000; color: #000; font-weight: bold; }
     </style>
 </head>
 <body class="min-h-screen text-gray-800 p-4 md:p-8">
@@ -60,118 +119,193 @@
     </div>
 
     <div class="max-w-7xl mx-auto">
-        <header class="text-center mb-10 fade-in">
-            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight">Order <span class="text-indigo-600">Generator</span></h1>
+        <header class="text-center mb-8 fade-in">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-gray-900 tracking-tight">HYPE <span class="text-gray-500">STUDIO</span></h1>
+            <p class="text-gray-600 mt-2 text-sm font-medium tracking-widest uppercase">Production Order Generator</p>
         </header>
 
-        <div class="grid grid-cols-1 lg:grid-cols-12 gap-8">
+        <div class="grid grid-cols-1 xl:grid-cols-12 gap-8">
             
-            <div class="lg:col-span-5 bg-white/90 backdrop-blur-md p-6 rounded-2xl shadow-xl fade-in border border-gray-200">
-                <h2 class="text-xl font-bold mb-6 flex items-center gap-2 border-b pb-2"><i class="fa-solid fa-pen-to-square text-indigo-500"></i> Details</h2>
+            <div class="xl:col-span-5 bg-white shadow-xl rounded-xl overflow-hidden border border-gray-200 flex flex-col h-fit">
                 
-                <div class="space-y-5">
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">Date</label>
-                        <input type="date" id="input-date" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none transition" onchange="updatePreview()">
-                    </div>
+                <div class="flex border-b border-gray-200 bg-gray-50">
+                    <button class="tab-btn active flex-1 py-3 text-sm font-semibold text-gray-500 hover:text-gray-800 transition-colors" onclick="switchTab('tab-general', this)">1. Setup</button>
+                    <button class="tab-btn flex-1 py-3 text-sm font-semibold text-gray-500 hover:text-gray-800 transition-colors" onclick="switchTab('tab-sizes', this)">2. Sizes & Note</button>
+                    <button class="tab-btn flex-1 py-3 text-sm font-semibold text-gray-500 hover:text-gray-800 transition-colors" onclick="switchTab('tab-embroidery', this)">3. Embroidery</button>
+                </div>
 
-                    <div class="bg-gray-50 p-4 rounded-lg border border-gray-100">
-                        <label class="block text-sm font-semibold mb-1">Page Logo</label>
-                        <input type="file" id="input-logo" accept="image/*" class="w-full text-sm mb-3" onchange="previewImage(this, 'preview-logo')">
-                        <label class="block text-xs text-gray-500 mb-1">Adjust Logo Size</label>
-                        <input type="range" id="logo-size" min="50" max="250" value="120" class="w-full accent-indigo-600" oninput="updateLogoSize()">
-                    </div>
+                <div class="p-6 overflow-y-auto max-h-[75vh] custom-scrollbar">
+                    
+                    <div id="tab-general" class="tab-content active space-y-5">
+                        <div class="grid grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Date</label>
+                                <input type="date" id="input-date" class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-1 focus:ring-black outline-none" onchange="updatePreview()">
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Design Name</label>
+                                <input type="text" id="input-design-name" placeholder="e.g. Summer Collection" class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-1 focus:ring-black outline-none" oninput="updatePreview()">
+                            </div>
+                        </div>
 
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">T-Shirt Design Photo</label>
-                        <input type="file" id="input-design" accept="image/*" class="w-full text-sm border border-gray-300 rounded-lg p-2" onchange="previewImage(this, 'preview-design')">
-                    </div>
+                        <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <h3 class="text-sm font-bold mb-3 border-b pb-1"><i class="fa-solid fa-building text-gray-400"></i> Brand Setup (Auto-Saves)</h3>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Upload Logo</label>
+                            <input type="file" id="input-logo" accept="image/*" class="w-full text-xs mb-3" onchange="handleLogoUpload(this)">
+                            
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Logo Size: <span id="logo-size-val">120</span>px</label>
+                            <input type="range" id="logo-size" min="50" max="300" value="120" class="w-full accent-black mb-4" oninput="updateLogoSize()">
 
-                    <div class="bg-indigo-50/50 p-4 rounded-lg border border-indigo-100">
-                        <label class="block text-sm font-semibold mb-3"><i class="fa-solid fa-chart-bar text-indigo-500"></i> Sizes & Quantities</label>
-                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                            <div><label class="text-xs font-bold text-gray-600">Small (S)</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()"></div>
-                            <div><label class="text-xs font-bold text-gray-600">Medium (M)</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()"></div>
-                            <div><label class="text-xs font-bold text-gray-600">Large (L)</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()"></div>
-                            <div><label class="text-xs font-bold text-gray-600">X-Large (XL)</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()"></div>
-                            <div><label class="text-xs font-bold text-gray-600">2X-Large (XXL)</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded-lg px-3 py-1 text-center" placeholder="0" oninput="updateChart()"></div>
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Custom Background Image</label>
+                            <input type="file" id="input-bg" accept="image/*" class="w-full text-xs mb-3" onchange="handleBgUpload(this)">
+                            
+                            <div class="flex items-center gap-3">
+                                <label class="text-xs font-bold text-gray-600">Background Tint Color:</label>
+                                <input type="color" id="bg-color" value="#ffffff" class="w-8 h-8 rounded cursor-pointer" oninput="updateBgTint()">
+                                <input type="range" id="bg-opacity" min="0" max="100" value="90" class="flex-1 accent-black" oninput="updateBgTint()">
+                            </div>
+                        </div>
+
+                        <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <h3 class="text-sm font-bold mb-3 border-b pb-1"><i class="fa-solid fa-shirt text-gray-400"></i> T-Shirt Mockups</h3>
+                            <div class="grid grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-600 mb-1">Front Image</label>
+                                    <input type="file" id="input-tshirt-front" accept="image/*" class="w-full text-xs border bg-white p-1 rounded" onchange="previewStandardImage(this, 'preview-tshirt-front')">
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-600 mb-1">Back Image</label>
+                                    <input type="file" id="input-tshirt-back" accept="image/*" class="w-full text-xs border bg-white p-1 rounded" onchange="previewStandardImage(this, 'preview-tshirt-back')">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
-                    <div>
-                        <label class="block text-sm font-semibold mb-1">Note</label>
-                        <textarea id="input-note" rows="3" class="w-full border border-gray-300 rounded-lg px-4 py-2 focus:ring-2 focus:ring-indigo-500 outline-none transition" placeholder="Instructions here..." oninput="updatePreview()"></textarea>
+                    <div id="tab-sizes" class="tab-content space-y-5">
+                        <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
+                            <h3 class="text-sm font-bold mb-4 border-b pb-1"><i class="fa-solid fa-ruler-combined text-gray-400"></i> Quantities</h3>
+                            <div class="grid grid-cols-4 gap-3">
+                                <div><label class="text-xs font-bold text-gray-600 block text-center">XS</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded p-1.5 text-center text-sm" placeholder="0" oninput="updateChart()"></div>
+                                <div><label class="text-xs font-bold text-gray-600 block text-center">S</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded p-1.5 text-center text-sm" placeholder="0" oninput="updateChart()"></div>
+                                <div><label class="text-xs font-bold text-gray-600 block text-center">M</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded p-1.5 text-center text-sm" placeholder="0" oninput="updateChart()"></div>
+                                <div><label class="text-xs font-bold text-gray-600 block text-center">L</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded p-1.5 text-center text-sm" placeholder="0" oninput="updateChart()"></div>
+                                <div><label class="text-xs font-bold text-gray-600 block text-center">XL</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded p-1.5 text-center text-sm" placeholder="0" oninput="updateChart()"></div>
+                                <div><label class="text-xs font-bold text-gray-600 block text-center">2XL</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded p-1.5 text-center text-sm" placeholder="0" oninput="updateChart()"></div>
+                                <div><label class="text-xs font-bold text-gray-600 block text-center">3XL</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded p-1.5 text-center text-sm" placeholder="0" oninput="updateChart()"></div>
+                                <div><label class="text-xs font-bold text-gray-600 block text-center">4XL</label><input type="number" min="0" class="qty-input w-full border border-gray-300 rounded p-1.5 text-center text-sm" placeholder="0" oninput="updateChart()"></div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-xs font-bold text-gray-600 uppercase mb-1">Production Notes</label>
+                            <textarea id="input-note" rows="4" class="w-full border border-gray-300 rounded p-3 text-sm focus:ring-1 focus:ring-black outline-none" placeholder="General instructions for the tailor..." oninput="updatePreview()"></textarea>
+                        </div>
                     </div>
 
-                    <button onclick="generatePDF()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3 rounded-lg shadow-lg hover:shadow-xl transition-all flex justify-center items-center gap-2 transform hover:-translate-y-1">
-                        <i class="fa-solid fa-file-pdf"></i> Download PDF
+                    <div id="tab-embroidery" class="tab-content space-y-4">
+                        <div class="flex justify-between items-center bg-black text-white p-3 rounded-lg shadow cursor-pointer hover:bg-gray-800 transition" onclick="addEmbroideryItem()">
+                            <span class="font-bold text-sm"><i class="fa-solid fa-plus mr-2"></i> Add Embroidery Design</span>
+                        </div>
+                        
+                        <div id="embroidery-container" class="space-y-4">
+                            </div>
+                    </div>
+
+                </div>
+
+                <div class="p-4 bg-gray-100 border-t mt-auto">
+                    <button onclick="generatePDF()" class="w-full bg-black hover:bg-gray-800 text-white font-bold py-3 rounded text-sm shadow transition-all flex justify-center items-center gap-2 uppercase tracking-wide">
+                        <i class="fa-solid fa-file-pdf"></i> Generate PDF Document
                     </button>
                 </div>
             </div>
 
-            <div class="lg:col-span-7 fade-in">
+            <div class="xl:col-span-7 fade-in">
                 <div class="sticky top-8">
                     <div class="flex justify-between items-center mb-3 px-2">
-                        <h2 class="text-lg font-bold text-gray-700"><i class="fa-solid fa-eye"></i> Live Preview</h2>
+                        <h2 class="text-lg font-bold text-gray-700"><i class="fa-solid fa-print"></i> Document Preview</h2>
+                        <span class="text-xs bg-gray-200 text-gray-700 px-3 py-1 rounded-full font-bold">A4 Sized</span>
                     </div>
                     
-                    <div class="overflow-x-auto rounded-lg">
-                        <div id="pdf-content" class="p-8 md:p-12 w-full min-h-[600px]">
+                    <div class="overflow-x-auto rounded border border-gray-300 shadow-sm bg-gray-300 p-2 md:p-4">
+                        <div id="pdf-content" class="w-full min-h-[1122px]" style="max-width: 794px; margin: 0 auto;">
                             
-                            <div class="flex justify-between items-center border-b-2 border-indigo-100 pb-6 mb-6 pt-4">
-                                <div>
-                                    <img id="preview-logo" src="" alt="Logo" class="hidden object-contain" style="width: 120px;">
-                                    <div id="logo-placeholder" class="text-gray-400 italic text-sm">No Logo Uploaded</div>
-                                </div>
-                                <div class="text-right">
-                                    <h1 class="text-3xl font-black text-gray-800 uppercase tracking-widest drop-shadow-sm">Order Sheet</h1>
-                                    <p class="text-gray-600 mt-1 font-semibold">Date: <span id="display-date" class="text-gray-900">YYYY-MM-DD</span></p>
-                                </div>
-                            </div>
+                            <div id="pdf-tint"></div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                            <div id="pdf-inner-content" class="p-8 md:p-12">
                                 
-                                <div class="bg-white/90 backdrop-blur-sm rounded-xl p-4 border border-gray-200 flex flex-col items-center justify-center min-h-[250px] shadow-sm">
-                                    <h3 class="text-sm font-bold text-indigo-400 uppercase tracking-wide mb-3 w-full text-center">Design Preview</h3>
-                                    <img id="preview-design" src="" class="hidden max-h-64 rounded shadow-sm object-contain">
-                                    <div id="design-placeholder" class="text-gray-300 text-center">
-                                        <i class="fa-solid fa-shirt text-4xl mb-2"></i>
-                                        <p class="text-sm">No design uploaded</p>
+                                <div class="flex justify-between items-start border-b-2 border-black pb-4 mb-6 pt-2">
+                                    <div>
+                                        <img id="preview-logo" src="" alt="Logo" class="hidden object-contain" style="width: 120px;">
+                                    </div>
+                                    <div class="text-right">
+                                        <h1 class="text-2xl font-black text-black uppercase tracking-widest">Production Order</h1>
+                                        <p class="text-gray-800 text-sm font-semibold mt-1">Date: <span id="display-date">YYYY-MM-DD</span></p>
+                                        <p class="text-gray-800 text-sm font-semibold">Design: <span id="display-design-name" class="text-gray-500 italic">None</span></p>
                                     </div>
                                 </div>
 
-                                <div>
-                                    <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-3">Sizing & Quantities</h3>
-                                    <div class="overflow-hidden rounded-lg border border-gray-200 bg-white/90 shadow-sm">
-                                        <table class="w-full text-left text-sm">
-                                            <thead class="bg-gray-800 text-white">
-                                                <tr>
-                                                    <th class="px-4 py-3 font-semibold">Size</th>
-                                                    <th class="px-4 py-3 font-semibold text-right">Qty</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody class="divide-y divide-gray-100" id="chart-body">
-                                                <tr><td class="px-4 py-3 text-gray-500 italic" colspan="2">Waiting for input...</td></tr>
-                                            </tbody>
-                                            <tfoot class="bg-indigo-50 font-bold border-t-2 border-indigo-200">
-                                                <tr>
-                                                    <td class="px-4 py-3 text-indigo-900">TOTAL</td>
-                                                    <td class="px-4 py-3 text-right text-indigo-900 text-lg" id="display-total">0</td>
-                                                </tr>
-                                            </tfoot>
-                                        </table>
+                                <div class="mb-8">
+                                    <div class="flex gap-4 justify-center">
+                                        <div class="flex-1 border border-gray-200 bg-white p-2 rounded flex flex-col items-center justify-center min-h-[250px] shadow-sm relative">
+                                            <span class="absolute top-2 left-2 text-[10px] font-bold uppercase text-gray-400 bg-gray-100 px-2 py-1 rounded">Front</span>
+                                            <img id="preview-tshirt-front" src="" class="hidden max-h-56 object-contain">
+                                            <i id="placeholder-front" class="fa-solid fa-shirt text-gray-200 text-5xl"></i>
+                                        </div>
+                                        <div class="flex-1 border border-gray-200 bg-white p-2 rounded flex flex-col items-center justify-center min-h-[250px] shadow-sm relative">
+                                            <span class="absolute top-2 left-2 text-[10px] font-bold uppercase text-gray-400 bg-gray-100 px-2 py-1 rounded">Back</span>
+                                            <img id="preview-tshirt-back" src="" class="hidden max-h-56 object-contain">
+                                            <i id="placeholder-back" class="fa-solid fa-shirt text-gray-200 text-5xl"></i>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="mb-8">
+                                    <h3 class="text-sm font-bold text-black uppercase tracking-wider mb-2 border-b border-gray-300 pb-1">Size Breakdown</h3>
+                                    <table class="w-full text-center text-sm border-collapse border border-gray-400 bg-white shadow-sm">
+                                        <thead class="bg-black text-white">
+                                            <tr>
+                                                <th class="border border-gray-400 py-2">XS</th>
+                                                <th class="border border-gray-400 py-2">S</th>
+                                                <th class="border border-gray-400 py-2">M</th>
+                                                <th class="border border-gray-400 py-2">L</th>
+                                                <th class="border border-gray-400 py-2">XL</th>
+                                                <th class="border border-gray-400 py-2">2XL</th>
+                                                <th class="border border-gray-400 py-2">3XL</th>
+                                                <th class="border border-gray-400 py-2">4XL</th>
+                                                <th class="border border-gray-400 py-2 bg-gray-800">TOTAL</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr id="chart-row-qty" class="font-bold text-gray-800">
+                                                <td class="border border-gray-400 py-3">-</td>
+                                                <td class="border border-gray-400 py-3">-</td>
+                                                <td class="border border-gray-400 py-3">-</td>
+                                                <td class="border border-gray-400 py-3">-</td>
+                                                <td class="border border-gray-400 py-3">-</td>
+                                                <td class="border border-gray-400 py-3">-</td>
+                                                <td class="border border-gray-400 py-3">-</td>
+                                                <td class="border border-gray-400 py-3">-</td>
+                                                <td class="border border-gray-400 py-3 text-lg bg-gray-100" id="display-total">0</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+
+                                <div id="display-embroidery-section" class="mb-8 hidden">
+                                    <h3 class="text-sm font-bold text-black uppercase tracking-wider mb-3 border-b border-gray-300 pb-1"><i class="fa-solid fa-pen-nib text-gray-500 mr-1"></i> Embroidery Specifications</h3>
+                                    <div id="display-embroidery-items" class="grid grid-cols-2 gap-6">
+                                        </div>
+                                </div>
+
+                                <div id="display-note-section" class="mt-8 pt-4 border-t-2 border-dashed border-gray-300">
+                                    <h3 class="text-xs font-bold text-gray-500 uppercase tracking-wide mb-2">Production Notes / Instructions</h3>
+                                    <div class="bg-yellow-50/80 p-4 rounded border border-yellow-200 shadow-sm min-h-[60px]">
+                                        <p id="display-note" class="text-gray-800 whitespace-pre-wrap text-sm font-medium">No special instructions provided.</p>
                                     </div>
                                 </div>
 
                             </div>
-
-                            <div class="mt-8 pt-6 border-t border-indigo-100">
-                                <h3 class="text-sm font-bold text-gray-800 uppercase tracking-wide mb-2"><i class="fa-solid fa-circle-info text-indigo-500"></i> Notes</h3>
-                                <div class="bg-white/90 p-4 rounded-lg border border-gray-200 min-h-[80px] shadow-sm">
-                                    <p id="display-note" class="text-gray-700 whitespace-pre-wrap text-sm italic">No special instructions provided.</p>
-                                </div>
-                            </div>
-
                         </div>
                     </div>
                 </div>
@@ -180,21 +314,59 @@
     </div>
 
     <script>
-        document.getElementById('input-date').valueAsDate = new Date();
-        updatePreview();
+        let embroideryItems = [];
+        let embIdCounter = 0;
 
-        function previewImage(input, targetId) {
+        // Initialize on Load
+        window.onload = function() {
+            document.getElementById('input-date').valueAsDate = new Date();
+            loadLocalStorage();
+            updatePreview();
+        };
+
+        // Tab Switching Logic
+        function switchTab(tabId, btn) {
+            document.querySelectorAll('.tab-content').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+            document.getElementById(tabId).classList.add('active');
+            btn.classList.add('active');
+        }
+
+        // --- LOCAL STORAGE LOGIC ---
+        function loadLocalStorage() {
+            const savedLogo = localStorage.getItem('hypeLogo');
+            if (savedLogo) {
+                document.getElementById('preview-logo').src = savedLogo;
+                document.getElementById('preview-logo').classList.remove('hidden');
+            }
+
+            const savedLogoSize = localStorage.getItem('hypeLogoSize');
+            if (savedLogoSize) {
+                document.getElementById('logo-size').value = savedLogoSize;
+                updateLogoSize();
+            }
+
+            const savedBg = localStorage.getItem('hypeBg');
+            if (savedBg) {
+                document.getElementById('pdf-content').style.backgroundImage = `url(${savedBg})`;
+            }
+
+            const savedColor = localStorage.getItem('hypeBgColor');
+            const savedOpacity = localStorage.getItem('hypeBgOpacity');
+            if (savedColor) document.getElementById('bg-color').value = savedColor;
+            if (savedOpacity) document.getElementById('bg-opacity').value = savedOpacity;
+            updateBgTint();
+        }
+
+        function handleLogoUpload(input) {
             const file = input.files[0];
-            const imgElement = document.getElementById(targetId);
-            const placeholderId = targetId === 'preview-logo' ? 'logo-placeholder' : 'design-placeholder';
-            const placeholderElement = document.getElementById(placeholderId);
-
             if (file) {
                 const reader = new FileReader();
                 reader.onload = function(e) {
-                    imgElement.src = e.target.result;
-                    imgElement.classList.remove('hidden');
-                    placeholderElement.classList.add('hidden');
+                    const data = e.target.result;
+                    document.getElementById('preview-logo').src = data;
+                    document.getElementById('preview-logo').classList.remove('hidden');
+                    localStorage.setItem('hypeLogo', data);
                 }
                 reader.readAsDataURL(file);
             }
@@ -202,112 +374,267 @@
 
         function updateLogoSize() {
             const size = document.getElementById('logo-size').value;
+            document.getElementById('logo-size-val').innerText = size;
             document.getElementById('preview-logo').style.width = size + 'px';
+            localStorage.setItem('hypeLogoSize', size);
+        }
+
+        function handleBgUpload(input) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const data = e.target.result;
+                    document.getElementById('pdf-content').style.backgroundImage = `url(${data})`;
+                    localStorage.setItem('hypeBg', data);
+                }
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function updateBgTint() {
+            const hex = document.getElementById('bg-color').value;
+            const op = document.getElementById('bg-opacity').value / 100;
+            
+            // Convert Hex to RGB
+            const r = parseInt(hex.slice(1, 3), 16);
+            const g = parseInt(hex.slice(3, 5), 16);
+            const b = parseInt(hex.slice(5, 7), 16);
+
+            const rgba = `rgba(${r}, ${g}, ${b}, ${op})`;
+            document.getElementById('pdf-tint').style.backgroundColor = rgba;
+            
+            localStorage.setItem('hypeBgColor', hex);
+            localStorage.setItem('hypeBgOpacity', document.getElementById('bg-opacity').value);
+        }
+
+        // --- PREVIEW LOGIC ---
+        function previewStandardImage(input, targetId) {
+            const file = input.files[0];
+            const imgElement = document.getElementById(targetId);
+            const placeholderId = targetId === 'preview-tshirt-front' ? 'placeholder-front' : 'placeholder-back';
+            
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    imgElement.src = e.target.result;
+                    imgElement.classList.remove('hidden');
+                    document.getElementById(placeholderId).classList.add('hidden');
+                }
+                reader.readAsDataURL(file);
+            }
         }
 
         function updateChart() {
             const inputs = document.querySelectorAll('.qty-input');
-            const sizes = ['S', 'M', 'L', 'XL', 'XXL'];
-            const tbody = document.getElementById('chart-body');
-            
-            let html = '';
+            const row = document.getElementById('chart-row-qty');
             let total = 0;
-            let hasData = false;
 
             inputs.forEach((input, index) => {
-                const val = parseInt(input.value);
-                if (val > 0) {
-                    hasData = true;
-                    total += val;
-                    html += `
-                        <tr class="hover:bg-gray-50 transition-colors">
-                            <td class="px-4 py-2 font-medium text-gray-800">${sizes[index]}</td>
-                            <td class="px-4 py-2 text-right font-bold text-gray-700">${val}</td>
-                        </tr>
-                    `;
-                }
+                const val = input.value === "" ? "-" : parseInt(input.value);
+                row.cells[index].innerText = val;
+                if(val !== "-") total += val;
             });
-
-            if (hasData) {
-                tbody.innerHTML = html;
-            } else {
-                tbody.innerHTML = '<tr><td class="px-4 py-2 text-gray-400 italic" colspan="2">No quantities entered yet.</td></tr>';
-            }
 
             document.getElementById('display-total').innerText = total;
         }
 
-        function updatePreview() {
-            const dateVal = document.getElementById('input-date').value;
-            document.getElementById('display-date').innerText = dateVal || 'Not Set';
+        // --- EMBROIDERY LOGIC ---
+        function addEmbroideryItem() {
+            const id = embIdCounter++;
+            const item = { id: id, heading: '', image: '', width: '', height: '', unit: 'Inches' };
+            embroideryItems.push(item);
+            renderEmbroideryInputs();
+            updatePreview();
+        }
 
-            const noteVal = document.getElementById('input-note').value;
-            const displayNote = document.getElementById('display-note');
-            if (noteVal.trim() === '') {
-                displayNote.innerText = "No special instructions provided.";
-                displayNote.classList.add('text-gray-400');
-                displayNote.classList.remove('text-gray-800');
-            } else {
-                displayNote.innerText = noteVal;
-                displayNote.classList.remove('text-gray-400');
-                displayNote.classList.add('text-gray-800');
+        function removeEmbroideryItem(id) {
+            embroideryItems = embroideryItems.filter(item => item.id !== id);
+            renderEmbroideryInputs();
+            updatePreview();
+        }
+
+        function handleEmbImageUpload(input, id) {
+            const file = input.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    const item = embroideryItems.find(i => i.id === id);
+                    if(item) {
+                        item.image = e.target.result;
+                        document.getElementById(`emb-preview-${id}`).src = item.image;
+                        document.getElementById(`emb-preview-${id}`).classList.remove('hidden');
+                        updatePreview();
+                    }
+                }
+                reader.readAsDataURL(file);
             }
         }
 
+        function updateEmbItemData(id, field, value) {
+            const item = embroideryItems.find(i => i.id === id);
+            if(item) {
+                item[field] = value;
+                updatePreview();
+            }
+        }
+
+        function renderEmbroideryInputs() {
+            const container = document.getElementById('embroidery-container');
+            container.innerHTML = '';
+
+            embroideryItems.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'p-4 bg-white border border-gray-200 rounded-lg shadow-sm relative fade-in';
+                div.innerHTML = `
+                    <button onclick="removeEmbroideryItem(${item.id})" class="absolute top-2 right-2 text-red-500 hover:text-red-700 p-1"><i class="fa-solid fa-trash"></i></button>
+                    
+                    <div class="mb-3">
+                        <label class="block text-xs font-bold text-gray-600 mb-1">Heading</label>
+                        <input type="text" class="w-full border border-gray-300 rounded p-2 text-sm focus:ring-1 focus:ring-black outline-none" placeholder="e.g. Chest Logo" value="${item.heading}" oninput="updateEmbItemData(${item.id}, 'heading', this.value)">
+                    </div>
+                    
+                    <div class="mb-3 flex gap-3">
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Graphic Image</label>
+                            <input type="file" accept="image/*" class="w-full text-xs border p-1 rounded" onchange="handleEmbImageUpload(this, ${item.id})">
+                        </div>
+                        <img id="emb-preview-${item.id}" src="${item.image}" class="w-12 h-12 object-contain border rounded bg-gray-50 ${item.image ? '' : 'hidden'}">
+                    </div>
+
+                    <div class="flex gap-2 items-end">
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Width</label>
+                            <input type="number" step="0.1" class="w-full border border-gray-300 rounded p-2 text-sm" placeholder="W" value="${item.width}" oninput="updateEmbItemData(${item.id}, 'width', this.value)">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Height</label>
+                            <input type="number" step="0.1" class="w-full border border-gray-300 rounded p-2 text-sm" placeholder="H" value="${item.height}" oninput="updateEmbItemData(${item.id}, 'height', this.value)">
+                        </div>
+                        <div class="flex-1">
+                            <label class="block text-xs font-bold text-gray-600 mb-1">Unit</label>
+                            <select class="w-full border border-gray-300 rounded p-2 text-sm" onchange="updateEmbItemData(${item.id}, 'unit', this.value)">
+                                <option value="Inches" ${item.unit === 'Inches' ? 'selected' : ''}>Inches</option>
+                                <option value="cm" ${item.unit === 'cm' ? 'selected' : ''}>cm</option>
+                                <option value="mm" ${item.unit === 'mm' ? 'selected' : ''}>mm</option>
+                            </select>
+                        </div>
+                    </div>
+                `;
+                container.appendChild(div);
+            });
+        }
+
+        // --- GLOBAL UPDATE PREVIEW ---
+        function updatePreview() {
+            // General info
+            document.getElementById('display-date').innerText = document.getElementById('input-date').value || 'Not Set';
+            
+            const designName = document.getElementById('input-design-name').value;
+            const displayDesign = document.getElementById('display-design-name');
+            if(designName) {
+                displayDesign.innerText = designName;
+                displayDesign.classList.remove('text-gray-500', 'italic');
+            } else {
+                displayDesign.innerText = 'None';
+                displayDesign.classList.add('text-gray-500', 'italic');
+            }
+
+            // Note
+            const noteVal = document.getElementById('input-note').value;
+            document.getElementById('display-note').innerText = noteVal.trim() === '' ? "No special instructions provided." : noteVal;
+
+            // Embroidery rendering for Tailor Document
+            const embSection = document.getElementById('display-embroidery-section');
+            const embItemsContainer = document.getElementById('display-embroidery-items');
+            
+            if (embroideryItems.length > 0) {
+                embSection.classList.remove('hidden');
+                embItemsContainer.innerHTML = '';
+
+                embroideryItems.forEach(item => {
+                    const w = item.width ? `${item.width} ${item.unit}` : '?';
+                    const h = item.height ? `${item.height} ${item.unit}` : '?';
+                    const imgSrc = item.image || 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="100" height="100"><rect width="100%" height="100%" fill="%23f3f4f6"/><text x="50%" y="50%" dominant-baseline="middle" text-anchor="middle" font-family="sans-serif" font-size="12" fill="%239ca3af">No Image</text></svg>';
+
+                    const html = `
+                        <div class="border border-gray-300 bg-white p-3 rounded flex flex-col items-center">
+                            <h4 class="text-xs font-bold bg-black text-white px-3 py-1 rounded-full mb-3 uppercase">${item.heading || 'Design Details'}</h4>
+                            
+                            <div class="flex items-center justify-center">
+                                <div>
+                                    <img src="${imgSrc}" class="max-w-[150px] max-h-[150px] object-contain border border-dashed border-gray-300 p-1">
+                                    <div class="measure-width"><i class="fa-solid fa-arrows-left-right text-[10px] mr-1"></i> ${w}</div>
+                                </div>
+                                <div class="measure-height-container">
+                                    <div class="measure-height"><i class="fa-solid fa-arrows-up-down text-[10px] mb-1"></i> ${h}</div>
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                    embItemsContainer.innerHTML += html;
+                });
+            } else {
+                embSection.classList.add('hidden');
+            }
+        }
+
+        // --- PDF GENERATION ---
         function showToast(message) {
             const toast = document.getElementById('toast');
             document.getElementById('toast-msg').innerText = message;
             toast.classList.add('show');
-            setTimeout(() => {
-                toast.classList.remove('show');
-            }, 3000);
+            setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
         function generatePDF() {
-            showToast("Generating PDF... Please wait.");
+            showToast("Generating Document...");
             const element = document.getElementById('pdf-content');
             
-            // Mobile eke awula hadanna element eka temporary desktop size ekata force karanawa
+            // Generate filename
+            const dateStr = document.getElementById('input-date').value || 'Date';
+            let dName = document.getElementById('input-design-name').value.trim();
+            dName = dName ? `_${dName.replace(/\s+/g, '-')}` : '';
+            const fileName = `Order_${dateStr}${dName}.pdf`;
+
+            // Mobile view handling
             const originalWidth = element.style.width;
             const originalMaxWidth = element.style.maxWidth;
             const originalPosition = element.style.position;
             const originalTransform = element.style.transform;
             
-            element.style.width = '800px';
-            element.style.maxWidth = '800px';
-            element.style.position = 'absolute'; // Container eken eliyata aragannawa print weddi
+            element.style.width = '794px'; // Standard A4 pixel width approx
+            element.style.maxWidth = '794px';
+            element.style.position = 'absolute';
             element.style.top = '0';
             element.style.left = '0';
             element.style.transform = 'none';
 
-            // Document eke uda hatama scroll karanawa (Naththam yata kedenawa)
             window.scrollTo(0, 0);
 
-            // Podi delay ekak denawa browser ekata aluth width eka hadaganna
             setTimeout(() => {
-                const finalHeight = element.scrollHeight; // Force kalata passe height eka gannawa
+                const finalHeight = element.scrollHeight;
 
                 const opt = {
-                    margin:       0, // Wate sudu kali ainkarala
-                    filename:     `Order_${document.getElementById('input-date').value}.pdf`,
+                    margin:       0,
+                    filename:     fileName,
                     image:        { type: 'jpeg', quality: 1 },
                     html2canvas:  { 
                         scale: 2, 
                         useCORS: true,
-                        scrollY: 0, // Scroll wela thibbath kedenne nathi wenna
-                        windowWidth: 800,
-                        width: 800,
+                        scrollY: 0,
+                        windowWidth: 794,
+                        width: 794,
                         height: finalHeight
                     },
                     jsPDF:        { 
                         unit: 'px', 
-                        format: [800, finalHeight], // Kelinma doc eke size ekata PDF eka set karanawa
+                        format: [794, finalHeight], 
                         orientation: 'portrait' 
                     }
                 };
 
                 html2pdf().set(opt).from(element).save().then(() => {
-                    // Download wunata passe ayeth mobile view eke display eka hadanawa
                     element.style.width = originalWidth || '100%';
                     element.style.maxWidth = originalMaxWidth || '100%';
                     element.style.position = originalPosition || 'relative';
@@ -315,9 +642,9 @@
                     element.style.left = '';
                     element.style.transform = originalTransform || '';
                     
-                    setTimeout(() => showToast("PDF downloaded successfully!"), 500);
+                    setTimeout(() => showToast("PDF saved successfully!"), 500);
                 });
-            }, 300); // 300ms delay eken DOM eka ready karagannawa
+            }, 300);
         }
     </script>
 </body>
