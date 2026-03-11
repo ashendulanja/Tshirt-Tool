@@ -24,39 +24,34 @@
             position: relative;
             background-size: cover;
             background-position: center;
+            /* Force width for standard A4 ratio preview */
+            width: 100%;
+            max-width: 794px;
+            margin: 0 auto;
         }
         
         #pdf-content::before {
-            content: '';
-            position: absolute;
-            top: 0; left: 0; right: 0;
-            height: 8px;
-            background: #111;
-            z-index: 10;
+            content: ''; position: absolute; top: 0; left: 0; right: 0; height: 8px; background: #111; z-index: 10;
         }
 
         #pdf-tint {
-            position: absolute;
-            top: 0; left: 0; right: 0; bottom: 0;
-            background-color: rgba(255, 255, 255, 0.9);
-            z-index: 0;
-            pointer-events: none;
+            position: absolute; top: 0; left: 0; right: 0; bottom: 0; background-color: rgba(255, 255, 255, 0.9); z-index: 0; pointer-events: none;
         }
 
         #pdf-inner-content {
-            position: relative;
-            z-index: 5;
+            position: relative; z-index: 5;
         }
 
-        /* Prevent elements from breaking across pages */
+        /* 100% Guaranteed Page Break Avoidance */
         .avoid-break {
-            page-break-inside: avoid;
-            break-inside: avoid;
+            page-break-inside: avoid !important;
+            break-inside: avoid-page !important;
+            display: block;
+            margin-bottom: 20px; /* Space between items when breaking */
         }
 
         .measure-width {
-            display: flex; align-items: center; justify-content: center;
-            font-size: 0.75rem; color: #4b5563; font-weight: bold; margin-top: 8px; position: relative;
+            display: flex; align-items: center; justify-content: center; font-size: 0.75rem; color: #4b5563; font-weight: bold; margin-top: 8px; position: relative;
         }
         .measure-width::before, .measure-width::after {
             content: ''; height: 1px; background-color: #9ca3af; flex-grow: 1; margin: 0 10px;
@@ -67,16 +62,14 @@
         }
         
         .measure-height {
-            display: flex; flex-direction: column; align-items: center; justify-content: center;
-            font-size: 0.75rem; color: #4b5563; font-weight: bold; height: 100%;
+            display: flex; flex-direction: column; align-items: center; justify-content: center; font-size: 0.75rem; color: #4b5563; font-weight: bold; height: 100%;
         }
         .measure-height::before, .measure-height::after {
             content: ''; width: 1px; background-color: #9ca3af; flex-grow: 1; margin: 10px 0;
         }
 
         #toast {
-            position: fixed; bottom: 20px; right: 20px;
-            transform: translateX(150%); transition: transform 0.3s ease-in-out; z-index: 50;
+            position: fixed; bottom: 20px; right: 20px; transform: translateX(150%); transition: transform 0.3s ease-in-out; z-index: 50;
         }
         #toast.show { transform: translateX(0); }
         
@@ -150,7 +143,6 @@
                     </div>
 
                     <div id="tab-sizes" class="tab-content space-y-5">
-                        
                         <div class="p-4 bg-gray-50 rounded-lg border border-gray-200">
                             <div class="flex justify-between items-center mb-3 border-b pb-2">
                                 <h3 class="text-sm font-bold"><i class="fa-solid fa-ruler-combined text-gray-400"></i> Sizes & Quantities</h3>
@@ -160,19 +152,20 @@
                                 </div>
                             </div>
                             
-                            <div class="overflow-hidden rounded border border-gray-300">
-                                <table class="w-full text-left text-sm bg-white">
+                            <div class="overflow-hidden rounded border border-gray-300 bg-white">
+                                <table class="w-full text-left text-sm">
                                     <thead class="bg-gray-800 text-white">
                                         <tr>
-                                            <th class="px-4 py-2 font-semibold w-1/2 border-r border-gray-700">Size</th>
-                                            <th class="px-4 py-2 font-semibold w-1/2">Qty</th>
+                                            <th class="px-3 py-2 font-semibold w-[20%]">Order</th>
+                                            <th class="px-3 py-2 font-semibold w-[40%] border-l border-r border-gray-700">Size</th>
+                                            <th class="px-3 py-2 font-semibold w-[40%]">Qty</th>
                                         </tr>
                                     </thead>
                                     <tbody id="size-input-body" class="divide-y divide-gray-200">
                                         </tbody>
                                     <tfoot class="bg-gray-100 font-bold border-t-2 border-gray-400">
                                         <tr>
-                                            <td class="px-4 py-2 text-right border-r border-gray-300">Total</td>
+                                            <td colspan="2" class="px-4 py-2 text-right border-r border-gray-300">Total</td>
                                             <td class="px-4 py-2" id="input-total">0</td>
                                         </tr>
                                     </tfoot>
@@ -190,7 +183,6 @@
                         <div class="flex justify-between items-center bg-gray-800 text-white p-3 rounded-lg shadow cursor-pointer hover:bg-black transition" onclick="addEmbroideryItem()">
                             <span class="font-bold text-sm"><i class="fa-solid fa-plus mr-2"></i> Add Embroidery Design</span>
                         </div>
-                        
                         <div id="embroidery-container" class="space-y-4 mt-3">
                             </div>
                     </div>
@@ -208,17 +200,15 @@
                 <div class="sticky top-8">
                     <div class="flex justify-between items-center mb-3 px-2">
                         <h2 class="text-lg font-bold text-gray-700"><i class="fa-solid fa-print"></i> Document Preview</h2>
-                        <span class="text-xs bg-gray-200 text-gray-700 px-3 py-1 rounded-full font-bold">A4 Sized (Multi-Page Ready)</span>
+                        <span class="text-xs bg-gray-200 text-gray-700 px-3 py-1 rounded-full font-bold">A4 Sized</span>
                     </div>
                     
                     <div class="overflow-x-auto rounded border border-gray-300 shadow-sm bg-gray-300 p-2 md:p-4">
-                        <div id="pdf-content" class="w-full" style="max-width: 794px; margin: 0 auto;">
-                            
+                        <div id="pdf-content">
                             <div id="pdf-tint"></div>
-
                             <div id="pdf-inner-content" class="p-8 md:p-12 text-gray-800">
                                 
-                                <div class="flex justify-between items-start border-b-2 border-black pb-4 mb-6 pt-2 avoid-break">
+                                <div class="flex justify-between items-start border-b-2 border-black pb-4 pt-2 avoid-break">
                                     <div>
                                         <img id="preview-logo" src="" alt="Logo" class="hidden object-contain" style="width: 120px;">
                                     </div>
@@ -229,14 +219,15 @@
                                     </div>
                                 </div>
 
-                                <div id="display-tshirt-section" class="mb-8 hidden avoid-break">
+                                <div id="display-tshirt-section" class="hidden mt-6 avoid-break">
                                     <div id="display-tshirt-items" class="grid gap-6">
                                         </div>
                                 </div>
 
-                                <div class="mb-8 avoid-break">
+                                <div class="mt-6 avoid-break">
                                     <h3 class="text-sm font-bold text-black uppercase tracking-wider mb-2 border-b border-gray-300 pb-1">Size Breakdown</h3>
-                                    <div class="max-w-xs mx-auto md:mx-0"> <table class="w-full text-center text-sm border-collapse border border-gray-400 bg-white shadow-sm">
+                                    <div class="max-w-xs mx-auto md:mx-0">
+                                        <table class="w-full text-center text-sm border-collapse border border-gray-400 bg-white shadow-sm">
                                             <thead class="bg-black text-white">
                                                 <tr>
                                                     <th class="border border-gray-400 py-2 w-1/2">Size</th>
@@ -255,7 +246,7 @@
                                     </div>
                                 </div>
 
-                                <div id="display-embroidery-section" class="mb-8 hidden avoid-break">
+                                <div id="display-embroidery-section" class="hidden mt-6 avoid-break">
                                     <h3 class="text-sm font-bold text-black uppercase tracking-wider mb-3 border-b border-gray-300 pb-1"><i class="fa-solid fa-pen-nib text-gray-500 mr-1"></i> Embroidery Specifications</h3>
                                     <div id="display-embroidery-items" class="grid grid-cols-1 sm:grid-cols-2 gap-6">
                                         </div>
@@ -431,28 +422,70 @@
             });
         }
 
-        // --- SIZES LOGIC (VERTICAL) ---
+        // --- SIZES LOGIC (REORDERING & ADDING) ---
         function addNewSize() {
             const input = document.getElementById('new-size-input');
             const newSize = input.value.trim().toUpperCase();
             if(newSize && !sizesList.includes(newSize)) {
                 sizesList.push(newSize);
-                localStorage.setItem('hypeCustomSizes', JSON.stringify(sizesList));
+                saveSizes();
                 input.value = '';
                 renderSizeInputs();
                 updatePreview();
             }
         }
 
+        function saveSizes() {
+            localStorage.setItem('hypeCustomSizes', JSON.stringify(sizesList));
+        }
+
+        function moveSizeUp(index) {
+            if (index > 0) {
+                const temp = sizesList[index];
+                sizesList[index] = sizesList[index - 1];
+                sizesList[index - 1] = temp;
+                saveSizes();
+                renderSizeInputs();
+                updatePreview();
+            }
+        }
+
+        function moveSizeDown(index) {
+            if (index < sizesList.length - 1) {
+                const temp = sizesList[index];
+                sizesList[index] = sizesList[index + 1];
+                sizesList[index + 1] = temp;
+                saveSizes();
+                renderSizeInputs();
+                updatePreview();
+            }
+        }
+
+        function removeSize(index) {
+            const sizeToRemove = sizesList[index];
+            sizesList.splice(index, 1);
+            delete quantitiesMap[sizeToRemove]; // remove qty data too
+            saveSizes();
+            renderSizeInputs();
+            updatePreview();
+        }
+
         function renderSizeInputs() {
             const tbody = document.getElementById('size-input-body');
             tbody.innerHTML = '';
-            sizesList.forEach(size => {
+            sizesList.forEach((size, index) => {
                 const val = quantitiesMap[size] || '';
                 const tr = document.createElement('tr');
                 tr.innerHTML = `
-                    <td class="px-4 py-2 border-r border-gray-200 font-bold text-gray-700">${size}</td>
-                    <td class="px-4 py-2"><input type="number" min="0" class="w-full border border-gray-300 rounded p-1 text-center text-sm focus:ring-1 focus:ring-black outline-none" value="${val}" placeholder="0" oninput="updateQty('${size}', this.value)"></td>
+                    <td class="px-2 py-2 flex items-center justify-center gap-1">
+                        <button onclick="moveSizeUp(${index})" class="text-gray-400 hover:text-black" title="Move Up"><i class="fa-solid fa-arrow-up"></i></button>
+                        <button onclick="moveSizeDown(${index})" class="text-gray-400 hover:text-black" title="Move Down"><i class="fa-solid fa-arrow-down"></i></button>
+                    </td>
+                    <td class="px-3 py-2 border-l border-r border-gray-200 font-bold text-gray-700 relative group">
+                        ${size}
+                        <button onclick="removeSize(${index})" class="absolute right-2 top-1/2 -translate-y-1/2 text-red-300 hover:text-red-500 hidden group-hover:block"><i class="fa-solid fa-xmark"></i></button>
+                    </td>
+                    <td class="px-3 py-2"><input type="number" min="0" class="w-full border border-gray-300 rounded p-1 text-center text-sm focus:ring-1 focus:ring-black outline-none" value="${val}" placeholder="0" oninput="updateQty('${size}', this.value)"></td>
                 `;
                 tbody.appendChild(tr);
             });
@@ -559,8 +592,6 @@
             if (tshirtItems.length > 0) {
                 tsSection.classList.remove('hidden');
                 tsContainer.innerHTML = '';
-                
-                // Adjust grid based on length (1 item = full width, 2+ items = 2 cols)
                 tsContainer.className = tshirtItems.length === 1 ? 'flex justify-center' : 'grid grid-cols-2 gap-6';
 
                 tshirtItems.forEach(item => {
@@ -578,7 +609,7 @@
                 tsSection.classList.add('hidden');
             }
 
-            // Render Sizes (Vertical)
+            // Render Sizes
             const tbody = document.getElementById('display-size-body');
             tbody.innerHTML = '';
             let total = 0;
@@ -638,6 +669,7 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
+        // --- PDF GENERATION FIX ---
         function generatePDF() {
             showToast("Generating Document...");
             const element = document.getElementById('pdf-content');
@@ -647,26 +679,27 @@
             dName = dName ? `_${dName.replace(/\s+/g, '-')}` : '';
             const fileName = `Order_${dateStr}${dName}.pdf`;
 
-            // Reset any absolute positioning to let html2pdf handle standard pagination
-            element.style.width = '794px'; 
-            element.style.margin = '0';
-            element.style.maxWidth = 'none';
+            // Remove box-shadow temporarily for cleaner print rendering
+            const originalShadow = element.style.boxShadow;
+            element.style.boxShadow = 'none';
 
-            // Options for standard A4 multi-page export
+            // Options explicitly set to prevent element clipping
             const opt = {
-                margin:       [10, 10, 10, 10], // Margin around pages (top, left, bottom, right) in mm
+                margin:       [15, 10, 15, 10], // Safe margins top/bottom
                 filename:     fileName,
-                image:        { type: 'jpeg', quality: 0.98 },
-                html2canvas:  { scale: 2, useCORS: true },
-                // mode: ['avoid-all'] prevents cutting elements with 'avoid-break' class
-                pagebreak:    { mode: ['avoid-all', 'css', 'legacy'] },
+                image:        { type: 'jpeg', quality: 1 },
+                html2canvas:  { 
+                    scale: 2, 
+                    useCORS: true, 
+                    letterRendering: true 
+                },
+                pagebreak:    { mode: ['css', 'legacy'] }, // Relying completely on CSS page-break-inside avoid
                 jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
             };
 
             html2pdf().set(opt).from(element).save().then(() => {
-                element.style.width = '100%';
-                element.style.maxWidth = '794px';
-                element.style.margin = '0 auto';
+                // Restore styles
+                element.style.boxShadow = originalShadow;
                 setTimeout(() => showToast("PDF saved successfully!"), 500);
             });
         }
