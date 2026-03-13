@@ -5,7 +5,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pro Order Generator - Hype Studio</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     
     <style>
@@ -24,7 +23,6 @@
             position: relative;
             background-size: cover;
             background-position: center;
-            /* Force width for standard A4 ratio preview */
             width: 100%;
             max-width: 794px;
             margin: 0 auto;
@@ -47,7 +45,7 @@
             page-break-inside: avoid !important;
             break-inside: avoid-page !important;
             display: block;
-            margin-bottom: 20px; /* Space between items when breaking */
+            margin-bottom: 20px;
         }
 
         .measure-width {
@@ -76,6 +74,55 @@
         .tab-content { display: none; }
         .tab-content.active { display: block; animation: fadeIn 0.3s ease-in-out; }
         .tab-btn.active { border-bottom: 2px solid #000; color: #000; font-weight: bold; }
+
+        /* --- Print Styles for Auto Fit --- */
+        @media print {
+            /* Hide all sidebar controls and headers */
+            .xl\:col-span-5, header, #toast, .sticky > div:first-child {
+                display: none !important;
+            }
+            
+            /* Expand the preview section */
+            .xl\:col-span-7 {
+                width: 100% !important;
+                max-width: 100% !important;
+                margin: 0 !important;
+                padding: 0 !important;
+            }
+
+            .max-w-7xl {
+                max-width: 100% !important;
+                padding: 0 !important;
+            }
+
+            /* Remove backgrounds from the wrappers */
+            .bg-gray-300 {
+                background: transparent !important;
+                border: none !important;
+                box-shadow: none !important;
+                padding: 0 !important;
+            }
+
+            /* Make document fill the paper */
+            #pdf-content {
+                box-shadow: none !important;
+                max-width: 100% !important;
+                width: 100% !important;
+                margin: 0 !important;
+            }
+
+            /* Retain background colors and images on print */
+            * {
+                -webkit-print-color-adjust: exact !important;
+                print-color-adjust: exact !important;
+            }
+
+            /* Allow browser to handle size naturally */
+            @page {
+                size: auto;
+                margin: 10mm;
+            }
+        }
     </style>
 </head>
 <body class="min-h-screen text-gray-800 p-4 md:p-8">
@@ -190,8 +237,8 @@
                 </div>
 
                 <div class="p-4 bg-gray-100 border-t mt-auto">
-                    <button onclick="generatePDF()" class="w-full bg-black hover:bg-gray-800 text-white font-bold py-3 rounded text-sm shadow transition-all flex justify-center items-center gap-2 uppercase tracking-wide">
-                        <i class="fa-solid fa-file-pdf"></i> Generate PDF Document
+                    <button onclick="printDocument()" class="w-full bg-black hover:bg-gray-800 text-white font-bold py-3 rounded text-sm shadow transition-all flex justify-center items-center gap-2 uppercase tracking-wide">
+                        <i class="fa-solid fa-print"></i> Print Document
                     </button>
                 </div>
             </div>
@@ -200,7 +247,6 @@
                 <div class="sticky top-8">
                     <div class="flex justify-between items-center mb-3 px-2">
                         <h2 class="text-lg font-bold text-gray-700"><i class="fa-solid fa-print"></i> Document Preview</h2>
-                        <span class="text-xs bg-gray-200 text-gray-700 px-3 py-1 rounded-full font-bold">A4 Sized</span>
                     </div>
                     
                     <div class="overflow-x-auto rounded border border-gray-300 shadow-sm bg-gray-300 p-2 md:p-4">
@@ -669,39 +715,12 @@
             setTimeout(() => toast.classList.remove('show'), 3000);
         }
 
-        // --- PDF GENERATION FIX ---
-        function generatePDF() {
-            showToast("Generating Document...");
-            const element = document.getElementById('pdf-content');
-            
-            const dateStr = document.getElementById('input-date').value || 'Date';
-            let dName = document.getElementById('input-design-name').value.trim();
-            dName = dName ? `_${dName.replace(/\s+/g, '-')}` : '';
-            const fileName = `Order_${dateStr}${dName}.pdf`;
-
-            // Remove box-shadow temporarily for cleaner print rendering
-            const originalShadow = element.style.boxShadow;
-            element.style.boxShadow = 'none';
-
-            // Options explicitly set to prevent element clipping
-            const opt = {
-                margin:       [15, 10, 15, 10], // Safe margins top/bottom
-                filename:     fileName,
-                image:        { type: 'jpeg', quality: 1 },
-                html2canvas:  { 
-                    scale: 2, 
-                    useCORS: true, 
-                    letterRendering: true 
-                },
-                pagebreak:    { mode: ['css', 'legacy'] }, // Relying completely on CSS page-break-inside avoid
-                jsPDF:        { unit: 'mm', format: 'a4', orientation: 'portrait' }
-            };
-
-            html2pdf().set(opt).from(element).save().then(() => {
-                // Restore styles
-                element.style.boxShadow = originalShadow;
-                setTimeout(() => showToast("PDF saved successfully!"), 500);
-            });
+        // --- DIRECT PRINT FIX ---
+        function printDocument() {
+            showToast("Opening Print Menu...");
+            setTimeout(() => {
+                window.print();
+            }, 500);
         }
     </script>
 </body>
